@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/233/clipboard_1f4cb.png">
+  <title>Easy Log</title>
+  
+  <style type="text/css">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+        "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+      background-color: #fff;
+      color: #000;
+    }
+    fieldset {
+      border-style: hidden;
+    }
+    .left-side {
+      width: 50%;
+      float: left;
+    }
+    .right-side {
+      width: 50%;
+      float: right;
+    }
+    .log-form {
+      display: none;
+    }
+    .form-section, .log-section {
+      padding: 10px;
+    }
+    .title-input, .log-textarea {
+      margin-bottom: 5px;
+      padding: 5px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    ul li {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 20px;
+    }
+    ul li span.timestamp {
+      float: right
+    }
+  </style>
+</head>
+
+<body>
+  <div class="left-side">
+    <header>
+      <h1>️️📋 Easy Log</h1>
+      <h2>Logging made easier</h2>
+      <p>Simply write your actions one by one, timestamp is automatically added to your logs.</p>
+    </header>
+    <section id="formSection" class="form-section">
+      <form id="titleForm">
+        <fieldset>
+          <legend>Create log title:</legend>
+          <div>
+            <input type="text" name="title" placeholder="Log title" maxlength="64" id="titleInput" class="title-input">
+          </div>
+          <div>
+            <input type="submit" value="Create" id="createBtn">
+          </div>
+        </fieldset>
+      </form>
+      <form id="logForm" class="log-form">
+        <fieldset>
+          <legend>Your actions:</legend>
+          <div>
+            <textarea rows="6" cols="50" maxlength="256" id="logTextArea" class="log-textarea"></textarea>
+          </div>
+          <div>
+            <input type="submit" value="Add" id="addBtn">
+          </div>
+        </fieldset>
+      </form>
+    </section>
+  </div>
+  <div class="right-side">
+    <section id="logListSection" class="log-section">
+      <h1 id="logTitle"></h1>
+      <ul id="logList">
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const titleForm = document.getElementById('titleForm');
+    const logForm = document.getElementById('logForm');
+    const titleInput = document.getElementById('titleInput');
+    const logTextArea = document.getElementById('logTextArea');
+    const logTitle = document.getElementById('logTitle');
+    const logList = document.getElementById('logList');
+
+    const logData = {
+      'actions': []
+    };
+
+    titleForm.onsubmit = function (e) {
+      e.preventDefault();
+      const title = titleInput.value.trim();
+      if (title) {
+        titleForm.style.display = "none";
+        logForm.style.display = "block";
+        logTitle.innerText = title;
+        logData.title = title;
+      }
+    }
+
+    logForm.onsubmit = function (e) {
+      e.preventDefault();
+      const date = new Date();
+      const log = logTextArea.value.trim();
+      if (log) {
+        logTextArea.value = "";
+
+        const logItemElement = document.createElement("li");
+        const logTextElement = document.createElement("span");
+        const timestampTextElement = document.createElement("span");
+        
+        logTextElement.innerText = log;
+
+        timestampTextElement.className = "timestamp"
+        timestampTextElement.innerText = date.toLocaleString();
+
+        logItemElement.appendChild(logTextElement);
+        logItemElement.appendChild(timestampTextElement);
+
+        logList.appendChild(logItemElement);
+
+        logData.actions.push({
+          'text': log,
+          'timestamp': date.getTime()
+        });
+      }
+    }
+  </script>
+</body>
+
+</html>
