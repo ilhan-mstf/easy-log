@@ -41,7 +41,7 @@
       list-style-type: none;
       padding: 0;
     }
-    ul li {
+    ul.log-list li {
       padding-bottom: 10px;
       border-bottom: 1px solid #eee;
       margin-bottom: 20px;
@@ -83,11 +83,15 @@
         </fieldset>
       </form>
     </section>
+    <section>
+      <ul id="historyList" class="history-list">
+      </ul>
+    </section>
   </div>
   <div class="right-side">
     <section id="logListSection" class="log-section">
       <h1 id="logTitle"></h1>
-      <ul id="logList">
+      <ul id="logList" class="log-list">
       </ul>
     </section>
   </div>
@@ -99,49 +103,118 @@
     const logTextArea = document.getElementById('logTextArea');
     const logTitle = document.getElementById('logTitle');
     const logList = document.getElementById('logList');
+    const historyList = document.getElementById('historyList');
 
-    const logData = {
+    const allLogs = getAllLogs();
+    let logData = {
       'actions': []
     };
 
+    allLogs.forEach(renderHistory);
+
+    function renderHistory(log) {
+      const historyItemElement = document.createElement("li");
+      const historyItemTextElement = document.createElement("span");
+      const historyItemTimestampElement = document.createElement("span");
+      
+      historyItemTextElement.innerText = log.title;
+      historyItemTimestampElement.innerText = new Date(log.timestamp).toLocaleString();
+      
+      historyItemElement.appendChild(historyItemTextElement);
+      historyItemElement.appendChild(historyItemTimestampElement);
+      historyItemElement.onclick = function (e) {
+        historyClickHandler(e, log);
+      }
+
+      historyList.appendChild(historyItemElement); 
+    }
+
+    function historyClickHandler(e, log) {
+      logData = log;
+      renderTitle(logData.title);
+      logList.innerHTML = "";
+      logData.actions.forEach(action => renderLog(action.text, new Date(action.timestamp)));
+    }
+
+    function getAllLogs() {
+      return JSON.parse(localStorage.getItem('easyLog') || "[]");
+    }
+
+    function saveAllLogs(allLogs) {
+      return localStorage.setItem('easyLog', JSON.stringify(allLogs));
+    }
+
+    function renderLog(log, date) {
+      const logItemElement = document.createElement("li");
+      const logTextElement = document.createElement("span");
+      const timestampTextElement = document.createElement("span");
+      
+      logTextElement.innerText = log;
+
+      timestampTextElement.className = "timestamp"
+      timestampTextElement.innerText = date.toLocaleString();
+
+      logItemElement.appendChild(logTextElement);
+      logItemElement.appendChild(timestampTextElement);
+
+      logList.appendChild(logItemElement);
+    }
+
+    function addLog(log, date) {
+      logData.actions.push({
+        'text': log,
+        'timestamp': date.getTime()
+      });
+
+      saveAllLogs(allLogs);
+    }
+
+    function renderAndAddLog(log) {
+      if (log) {
+        const date = new Date();
+        
+        renderLog(log, date);
+        addLog(log, date);
+      }
+    }
+
+    function renderTitle(title) {
+      titleForm.style.display = "none";
+      logForm.style.display = "block";
+      logTitle.innerText = title;
+    }
+
+    function addTitle(title) {
+      logData.title = title;
+      logData.timestamp = new Date().getTime();
+
+      allLogs.push(logData);
+      saveAllLogs(allLogs);
+    }
+    
+    function renderAndAddTitle(title) {
+      if (title) {
+        renderTitle(title);
+        addTitle(title);
+      }
+    }
+
     titleForm.onsubmit = function (e) {
       e.preventDefault();
+      
       const title = titleInput.value.trim();
-      if (title) {
-        titleForm.style.display = "none";
-        logForm.style.display = "block";
-        logTitle.innerText = title;
-        logData.title = title;
-      }
+      renderAndAddTitle(title);
     }
 
     logForm.onsubmit = function (e) {
       e.preventDefault();
-      const date = new Date();
+       
       const log = logTextArea.value.trim();
-      if (log) {
-        logTextArea.value = "";
-
-        const logItemElement = document.createElement("li");
-        const logTextElement = document.createElement("span");
-        const timestampTextElement = document.createElement("span");
-        
-        logTextElement.innerText = log;
-
-        timestampTextElement.className = "timestamp"
-        timestampTextElement.innerText = date.toLocaleString();
-
-        logItemElement.appendChild(logTextElement);
-        logItemElement.appendChild(timestampTextElement);
-
-        logList.appendChild(logItemElement);
-
-        logData.actions.push({
-          'text': log,
-          'timestamp': date.getTime()
-        });
-      }
+      renderAndAddLog(log);
+      logTextArea.value = "";
     }
+
+
   </script>
 </body>
 
