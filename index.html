@@ -18,6 +18,8 @@
     }
     fieldset {
       border-style: hidden;
+      padding-left: 0;
+      margin-left: 0;
     }
     .left-side {
       width: 50%;
@@ -49,6 +51,9 @@
     ul li span.timestamp {
       float: right
     }
+    .history-time {
+      padding-right: 15px;
+    }
   </style>
 </head>
 
@@ -59,10 +64,25 @@
       <h2>Logging made easier</h2>
       <p>Simply write your actions one by one, timestamp is automatically added to your logs.</p>
     </header>
+    <section>
+      <input type="submit" value="Create new topic" id="createNewTopicBtn">
+      <h3>Topics</h3>
+      <ul id="historyList" class="history-list">
+        <li>You haven't created any topic.</li>
+      </ul>
+    </section>
+  </div>
+  <div class="right-side">
+    <section id="logListSection" class="log-section">
+      <h1 id="logTitle"></h1>
+      <ul id="logList" class="log-list">
+      </ul>
+    </section>
+    
     <section id="formSection" class="form-section">
       <form id="titleForm">
         <fieldset>
-          <legend>Create log title:</legend>
+          <legend>Create topic:</legend>
           <div>
             <input type="text" name="title" placeholder="Log title" maxlength="64" id="titleInput" class="title-input">
           </div>
@@ -83,17 +103,6 @@
         </fieldset>
       </form>
     </section>
-    <section>
-      <ul id="historyList" class="history-list">
-      </ul>
-    </section>
-  </div>
-  <div class="right-side">
-    <section id="logListSection" class="log-section">
-      <h1 id="logTitle"></h1>
-      <ul id="logList" class="log-list">
-      </ul>
-    </section>
   </div>
 
   <script>
@@ -104,12 +113,16 @@
     const logTitle = document.getElementById('logTitle');
     const logList = document.getElementById('logList');
     const historyList = document.getElementById('historyList');
+    const createNewTopicBtn = document.getElementById('createNewTopicBtn');
 
     const allLogs = getAllLogs();
     let logData = {
       'actions': []
     };
 
+    if (allLogs.length) {
+      historyList.innerHTML = null;
+    }
     allLogs.forEach(renderHistory);
 
     function renderHistory(log) {
@@ -119,9 +132,10 @@
       
       historyItemTextElement.innerText = log.title;
       historyItemTimestampElement.innerText = new Date(log.timestamp).toLocaleString();
+      historyItemTimestampElement.className = "history-time";
       
-      historyItemElement.appendChild(historyItemTextElement);
       historyItemElement.appendChild(historyItemTimestampElement);
+      historyItemElement.appendChild(historyItemTextElement);
       historyItemElement.onclick = function (e) {
         historyClickHandler(e, log);
       }
@@ -190,6 +204,7 @@
 
       allLogs.push(logData);
       saveAllLogs(allLogs);
+      renderHistory(logData);
     }
     
     function renderAndAddTitle(title) {
@@ -214,7 +229,18 @@
       logTextArea.value = "";
     }
 
+    createNewTopicBtn.onclick = function (e) {
+      e.preventDefault();
 
+      logData = {
+        'actions': []
+      };
+      logList.innerHTML = null;
+      logTitle.innerHTML = null;
+      titleInput.value = '';
+      titleForm.style.display = "block";
+      logForm.style.display = "none";
+    }
   </script>
 </body>
 
