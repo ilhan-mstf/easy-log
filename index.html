@@ -47,6 +47,7 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #eee;
       margin-bottom: 20px;
+      word-break: break-all;
     }
     ul li span.timestamp {
       float: right
@@ -68,7 +69,7 @@
       <input type="submit" value="Create new topic" id="createNewTopicBtn">
       <h3>Topics</h3>
       <ul id="historyList" class="history-list">
-        <li>You haven't created any topic.</li>
+        <li id="emptyHistoryMessage">You haven't created any topic.</li>
       </ul>
     </section>
   </div>
@@ -114,39 +115,78 @@
     const logList = document.getElementById('logList');
     const historyList = document.getElementById('historyList');
     const createNewTopicBtn = document.getElementById('createNewTopicBtn');
+    const emptyHistoryMessage = document.getElementById('emptyHistoryMessage');
 
-    const allLogs = getAllLogs();
+    let allLogs = getAllLogs();
     let logData = {
       'actions': []
     };
 
-    if (allLogs.length) {
-      historyList.innerHTML = null;
-    }
     allLogs.forEach(renderHistory);
 
+    function hideEmptyHistoryMessage () {
+      emptyHistoryMessage.style.display = "none";
+    }
+
+    function displayEmptyHistoryMessage () {
+      emptyHistoryMessage.style.display = "block";
+    }
+
     function renderHistory(log) {
+      hideEmptyHistoryMessage();
+
       const historyItemElement = document.createElement("li");
-      const historyItemTextElement = document.createElement("span");
+      const historyItemTextElement = document.createElement("a");
       const historyItemTimestampElement = document.createElement("span");
+      const deleteHistoryItemBtn = document.createElement("button");
       
       historyItemTextElement.innerText = log.title;
-      historyItemTimestampElement.innerText = new Date(log.timestamp).toLocaleString();
-      historyItemTimestampElement.className = "history-time";
-      
-      historyItemElement.appendChild(historyItemTimestampElement);
-      historyItemElement.appendChild(historyItemTextElement);
-      historyItemElement.onclick = function (e) {
+      historyItemTextElement.href = "#";
+      historyItemTextElement.onclick = function (e) {
         historyClickHandler(e, log);
       }
 
-      historyList.appendChild(historyItemElement); 
+      historyItemTimestampElement.innerText = new Date(log.timestamp).toLocaleString();
+      historyItemTimestampElement.className = "history-time";
+
+      deleteHistoryItemBtn.innerHTML = "Delete";
+      deleteHistoryItemBtn.onclick = function (e) {
+        deleteHistoryItem(e, log);
+      }
+      
+      historyItemElement.appendChild(historyItemTimestampElement);
+      historyItemElement.appendChild(historyItemTextElement);
+      historyItemElement.appendChild(deleteHistoryItemBtn);
+
+      historyList.appendChild(historyItemElement);
+    }
+
+    function removeLog(arr, value) {
+      return arr.filter(function (item) {
+        return item.timestamp !== value.timestamp;
+      });
+    }
+
+    function deleteHistoryItem(e, log) {
+      let element = event.target;
+      element.parentNode.parentNode.removeChild(element.parentNode);
+
+      allLogs = removeLog(allLogs, log);
+      saveAllLogs(allLogs);
+
+      if (!allLogs.length) {
+        displayEmptyHistoryMessage();
+      }
+
+      if (logData.timestamp === log.timestamp) {
+        renderNewTopic();
+      }
     }
 
     function historyClickHandler(e, log) {
       logData = log;
       renderTitle(logData.title);
-      logList.innerHTML = "";
+      logList.innerHTML = null;
       logData.actions.forEach(action => renderLog(action.text, new Date(action.timestamp)));
     }
 
@@ -174,6 +214,10 @@
       logList.appendChild(logItemElement);
     }
 
+    function scrollToBottom() {
+      window.scrollTo(0,document.body.scrollHeight);
+    }
+
     function addLog(log, date) {
       logData.actions.push({
         'text': log,
@@ -189,6 +233,7 @@
         
         renderLog(log, date);
         addLog(log, date);
+        scrollToBottom();
       }
     }
 
@@ -214,6 +259,17 @@
       }
     }
 
+    function renderNewTopic () {
+      logData = {
+        'actions': []
+      };
+      logList.innerHTML = null;
+      logTitle.innerHTML = null;
+      titleInput.value = '';
+      titleForm.style.display = "block";
+      logForm.style.display = "none";
+    }
+
     titleForm.onsubmit = function (e) {
       e.preventDefault();
       
@@ -232,14 +288,7 @@
     createNewTopicBtn.onclick = function (e) {
       e.preventDefault();
 
-      logData = {
-        'actions': []
-      };
-      logList.innerHTML = null;
-      logTitle.innerHTML = null;
-      titleInput.value = '';
-      titleForm.style.display = "block";
-      logForm.style.display = "none";
+      renderNewTopic();
     }
   </script>
 </body>
