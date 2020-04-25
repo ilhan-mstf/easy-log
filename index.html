@@ -1,3 +1,8 @@
+<!--
+  Author: Mustafa ilhan, https://ilhan-mstf.github.io/
+  Project home: https://github.com/ilhan-mstf/easy-log
+  License: GNU Public v3
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +11,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/233/clipboard_1f4cb.png">
   <title>Easy Log</title>
+  <meta name="description" content="Simply write your actions one by one, timestamp is automatically added to your logs.">
+  <meta name="keywords" content="Personal, Log, Dairy, Note, Record">
+  <meta name="author" content="Mustafa ilhan, https://ilhan-mstf.github.io/">
   
   <style type="text/css">
     body {
@@ -49,11 +57,30 @@
       margin-bottom: 20px;
       word-break: break-all;
     }
-    ul li span.timestamp {
-      float: right
+    ul li div.timestamp {
+      text-align: right;
+      font-size: 12px;
+      margin-top: 4px;
     }
-    .history-time {
+    .history-time,
+    ul li div.timestamp {
+      color: #666;
+    }
+    .history-time,
+    .history-list a {
       padding-right: 15px;
+    }
+    .history-list li {
+      margin-bottom: 5px;
+    }
+    #logTitle {
+      background-color: #000;
+      color: #fff;
+      padding: 5px;
+    }
+    .spacer {
+      border-bottom: 1px #eee solid;
+      margin-bottom: 15px;
     }
   </style>
 </head>
@@ -63,7 +90,9 @@
     <header>
       <h1>️️📋 Easy Log</h1>
       <h2>Logging made easier</h2>
-      <p>Simply write your actions one by one, timestamp is automatically added to your logs.</p>
+      <p>Simply write your actions one by one, timestamp is automatically added to your logs. You cannot change our logs. Your data is saved on your browser's local storage.</p>
+      <p>Feedbacks and suggestions: <a href="https://github.com/ilhan-mstf/easy-log/issues" target="_blank">https://github.com/ilhan-mstf/easy-log/issues</a></p>
+      <div class="spacer"></div>
     </header>
     <section>
       <input type="submit" value="Create new topic" id="createNewTopicBtn">
@@ -76,8 +105,7 @@
   <div class="right-side">
     <section id="logListSection" class="log-section">
       <h1 id="logTitle"></h1>
-      <ul id="logList" class="log-list">
-      </ul>
+      <ul id="logList" class="log-list"></ul>
     </section>
     
     <section id="formSection" class="form-section">
@@ -94,7 +122,7 @@
       </form>
       <form id="logForm" class="log-form">
         <fieldset>
-          <legend>Your actions:</legend>
+          <legend>Your actions/notes/records/logs:</legend>
           <div>
             <textarea rows="6" cols="50" maxlength="256" id="logTextArea" class="log-textarea"></textarea>
           </div>
@@ -168,6 +196,10 @@
     }
 
     function deleteHistoryItem(e, log) {
+      if (!confirm("Are you sure?")) {
+        return;
+      }
+
       let element = event.target;
       element.parentNode.parentNode.removeChild(element.parentNode);
 
@@ -200,8 +232,8 @@
 
     function renderLog(log, date) {
       const logItemElement = document.createElement("li");
-      const logTextElement = document.createElement("span");
-      const timestampTextElement = document.createElement("span");
+      const logTextElement = document.createElement("div");
+      const timestampTextElement = document.createElement("div");
       
       logTextElement.innerText = log;
 
