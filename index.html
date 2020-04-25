@@ -1,6 +1,6 @@
 <!--
   Author: Mustafa ilhan, https://ilhan-mstf.github.io/
-  Project home: https://github.com/ilhan-mstf/easy-log
+  Project home: https://github.com/ilhan-mstf/log-simply
   License: GNU Public v3
 -->
 <!DOCTYPE html>
@@ -10,7 +10,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="icon" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/233/clipboard_1f4cb.png">
-  <title>Easy Log</title>
+  <title>Log Simply</title>
   <meta name="description" content="Simply write your actions one by one, timestamp is automatically added to your logs.">
   <meta name="keywords" content="Personal, Log, Dairy, Note, Record">
   <meta name="author" content="Mustafa ilhan, https://ilhan-mstf.github.io/">
@@ -88,10 +88,10 @@
 <body>
   <div class="left-side">
     <header>
-      <h1>️️📋 Easy Log</h1>
+      <h1>️️📋 Log Simply</h1>
       <h2>Logging made easier</h2>
-      <p>Simply write your actions one by one, timestamp is automatically added to your logs. You cannot change our logs. Your data is saved on your browser's local storage.</p>
-      <p>Feedbacks and suggestions: <a href="https://github.com/ilhan-mstf/easy-log/issues" target="_blank">https://github.com/ilhan-mstf/easy-log/issues</a></p>
+      <p>Simply write your actions one by one, timestamp is automatically added to your logs. You cannot edit your logs. Your data is saved on your browser's local storage.</p>
+      <p>Feedbacks and suggestions: <a href="https://github.com/ilhan-mstf/log-simply/issues" target="_blank">https://github.com/ilhan-mstf/log-simply/issues</a></p>
       <div class="spacer"></div>
     </header>
     <section>
@@ -111,9 +111,9 @@
     <section id="formSection" class="form-section">
       <form id="titleForm">
         <fieldset>
-          <legend>Create topic:</legend>
+          <legend>Create new topic:</legend>
           <div>
-            <input type="text" name="title" placeholder="Log title" maxlength="64" id="titleInput" class="title-input">
+            <input type="text" name="title" placeholder="Topic title" maxlength="64" id="titleInput" class="title-input">
           </div>
           <div>
             <input type="submit" value="Create" id="createBtn">
@@ -223,11 +223,11 @@
     }
 
     function getAllLogs() {
-      return JSON.parse(localStorage.getItem('easyLog') || "[]");
+      return JSON.parse(localStorage.getItem('logSimplyApp') || "[]");
     }
 
     function saveAllLogs(allLogs) {
-      return localStorage.setItem('easyLog', JSON.stringify(allLogs));
+      return localStorage.setItem('logSimplyApp', JSON.stringify(allLogs));
     }
 
     function renderLog(log, date) {
